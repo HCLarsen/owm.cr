@@ -1,24 +1,65 @@
 require "http/client"
 require "json"
 
-city = "Mississauga"
-response = HTTP::Client.get "http://api.openweathermap.org/data/2.5/weather?APPID=83658a490b36698e09e779d265859910&q=#{URI.escape(city)}"
-puts response.status_code
-value = JSON.parse(response.body)
+# A module containing classes and methods for interacting with the Open Weather
+# Map API.
 
-#string = %({"coord":{"lon":-79.66,"lat":43.58},"weather":[{"id":804,"main":"Clouds","description":"overcast clouds","icon":"04d"}],"base":"stations","main":{"temp":292.49,"pressure":1017,"humidity":63,"temp_min":291.15,"temp_max":294.15},"visibility":24140,"wind":{"speed":3.6,"deg":150},"clouds":{"all":90},"dt":1507320000,"sys":{"type":1,"id":3722,"message":0.004,"country":"CA","sunrise":1507288997,"sunset":1507330127},"id":6075357,"name":"Mississauga","cod":200})
-#value = JSON.parse(string)
+module OpenWeatherMap
+  # A client for interfacing with the Open Weather Map API.
+  class Client
+    def initialize(key : String)
+      @key = key
+    end
 
-temp = (value["main"]["temp"].as_f - 273.15).round(1)
-description = value["weather"][0]["description"]
-windSpeed = value["wind"]["speed"].as_f
-output = "Temperature is #{temp} degrees, with #{description}. "
+    # Requests current weather information for a single city and returns it as
+    # an instance of OpenWeatherMap::CurrentWeather.
+    def getCurrentWeatherFor(city : String)
+      response = HTTP::Client.get "http://api.openweathermap.org/data/2.5/weather?APPID=#{@key}&q=#{URI.escape(city)}"
+      value = JSON.parse(response.body)
+      CurrentWeather.new(value)
+    end
+  end
 
-if windSpeed > 5 && temp < 10
-  windChill = (13.12 + 0.6215 * temp - 11.37 * windSpeed ** 0.16 + 0.3965 * temp * windSpeed ** 0.16).round(1)
-  output += "Wind Speed is #{windSpeed * 3.6}k/h, with a windwchill of #{windChill} degrees."
-else
-  output += "Wind is #{windSpeed * 3.6}k/h."
+  # Contains all the information on the current weather status for any city.
+  class CurrentWeather
+    getter name : String
+    getter id : Int32
+    getter temp : Float64
+    getter windSpeed : Float64
+    getter description : String
+
+    # Creates a new instance from the information in a JSON::Any object
+    def initialize(value : JSON::Any)
+      @name = value["name"].as_s
+      @id = value["id"].as_i
+      @temp = (value["main"]["temp"].as_f - 273.15).round(1)
+      @description = value["weather"][0]["description"].as_s
+      if value["wind"]["speed"].as_f?
+        @windSpeed = value["wind"]["speed"].as_f
+      else
+        @windSpeed = value["wind"]["speed"].as_i.to_f
+      end
+    end
+
+    # Outputs weather in a human readable format.
+    def simpleOutput
+      output = "Temperature in #{@name} is #{@temp} degrees, with #{@description}. "
+
+      if @windSpeed > 5 && @temp < 10
+        windChill = (13.12 + 0.6215 * @temp - 11.37 * @windSpeed ** 0.16 + 0.3965 * @temp * @windSpeed ** 0.16).round(1)
+        output += "Wind Speed is #{@windSpeed * 3.6}k/h, with a windwchill of #{windChill} degrees."
+      else
+        output += "Wind is #{(@windSpeed * 3.6).round(1)}km/h."
+      end
+
+      output
+    end
+  end
 end
 
-puts output
+key = "83658a490b36698e09e779d265859910"
+city = "Mississauga"
+
+weather = OpenWeatherMap::Client.new(key)
+currentWeather = weather.getCurrentWeatherFor(city)
+puts currentWeather.simpleOutput
