@@ -5,7 +5,7 @@ require "./client"
 
 # A module containing classes and methods for interacting with the Open Weather
 # Map API.
-module HTTP
+module OpenWeatherMap
 end
 
 key = ENV["OWM"]
@@ -15,22 +15,24 @@ lat = 43.5
 long = -79.5
 zip = 94040
 
-params = { "id" => "6075357" }
-
 weather = OpenWeatherMap::Client.new(key)
-currentWeather = weather.getCurrentWeatherFor(params)
+
+currentWeather = weather.currentWeatherForCity(cityID)
 case currentWeather
 when OpenWeatherMap::CurrentWeather
-  puts "Hash: " + currentWeather.simpleOutput
+  puts "City ID: " + currentWeather.simpleOutput
 else
   puts currentWeather
 end
 
-#currentWeather = weather.getCurrentWeatherFor(cityID)
-#puts "CityID: " + currentWeather.simpleOutput
-#currentWeather = weather.getCurrentWeatherFor(city)
-#puts "City Name: " + currentWeather.simpleOutput
-#currentWeather = weather.getCurrentWeatherAt(lat, long)
-#puts "Lat and Long: " + currentWeather.simpleOutput
-#currentWeather = weather.getCurrentWeatherAtZip(zip)
-#puts "Zip Code: " + currentWeather.simpleOutput
+#currentWeather = weather.currentWeatherForCities(lat, long, 10)
+#currentWeather = weather.currentWeatherForCities(12.0,32.0,15.0,37.0,10)
+currentWeather = weather.currentWeatherForCities([6075357,6111708,6092122])
+case currentWeather
+when Array(OpenWeatherMap::CurrentWeather)
+  currentWeather.each do |current|
+    puts "IDs: " + current.simpleOutput
+  end
+else
+  puts currentWeather
+end

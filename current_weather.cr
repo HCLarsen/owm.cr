@@ -1,5 +1,6 @@
 # Contains all the information on the current weather status for any city.
 class OpenWeatherMap::CurrentWeather
+  getter time : Time
   getter name : String
   getter id : Int32
   getter temp : Float64
@@ -8,15 +9,26 @@ class OpenWeatherMap::CurrentWeather
 
   # Creates a new instance from the information in a JSON::Any object
   def initialize(value : JSON::Any)
+    @time = Time.now
     @name = value["name"].as_s
     @id = value["id"].as_i
-    @temp = (value["main"]["temp"].as_f - 273.15).round(1)
-    @description = value["weather"][0]["description"].as_s
+    if value["main"]["temp"].as_f?
+      @temp = (value["main"]["temp"].as_f - 273.15).round(1)
+    else
+      @temp = (value["main"]["temp"].as_i.to_f - 273.15).round(1)
+    end
     if value["wind"]["speed"].as_f?
       @windSpeed = value["wind"]["speed"].as_f
     else
       @windSpeed = value["wind"]["speed"].as_i.to_f
     end
+    @description = value["weather"][0]["description"].as_s
+  end
+
+  # Returns the time passed since the instantiation of the object. Useful for
+  # checking how recent the weather data is.
+  def timePassed
+    Time.now - @time
   end
 
   # Outputs weather in a human readable format.
