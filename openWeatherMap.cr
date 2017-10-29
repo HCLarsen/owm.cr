@@ -9,15 +9,14 @@ module OpenWeatherMap
 end
 
 key = ENV["OWM"]
-city = "Mississauga"
-cityID = 6075357
-lat = 43.5
-long = -79.5
-zip = 94040
 
 weather = OpenWeatherMap::Client.new(key)
 
-currentWeather = weather.currentWeatherForCity(cityID)
+#params = { "city" => "Mississauga" }
+#params = { "id" => 6075357}
+params = { "lat" => 43.5, "lon" => -79.5}
+#params = { "zip" => 94040}
+currentWeather = weather.current_weather_for_city(params)
 case currentWeather
 when OpenWeatherMap::CurrentWeather
   puts "City ID: " + currentWeather.simpleOutput
@@ -25,9 +24,10 @@ else
   puts currentWeather
 end
 
-#currentWeather = weather.currentWeatherForCities(lat, long, 10)
-#currentWeather = weather.currentWeatherForCities(12.0,32.0,15.0,37.0,10)
-currentWeather = weather.currentWeatherForCities([6075357,6111708,6092122])
+#params = { "bbox" => [12.0,32.0,15.0,37.0,10] }
+#params = { "lat" => 43.5, "lon" => -79.5, "cnt" => 3 }
+params = { "id" => [6075357, 6111708, 6092122] }
+currentWeather = weather.current_weather_for_cities(params)
 case currentWeather
 when Array(OpenWeatherMap::CurrentWeather)
   currentWeather.each do |current|
