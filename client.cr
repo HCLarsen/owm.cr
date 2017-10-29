@@ -10,31 +10,6 @@ class OpenWeatherMap::Client
     @key = key
   end
 
-  # Requests current weather information for cities within a box bounded by latitude
-  # and longitude coordinates. Returns an array of CurrentWeather objects.
-  def currentWeatherForCities(lon_left : Float64, lat_bottom : Float64, lon_right : Float64, lat_top : Float64, zoom : Int32)
-    params = { "APPID" => @key }
-    address = @@base_address + "/box/city?bbox=#{lon_left},#{lat_bottom},#{lon_right},#{lat_top},#{zoom}&" + HTTP::Params.encode(params)
-    getCurrentWeather address
-  end
-
-  # Requests current weather information for cities within a circle of specified
-  # diameter originating at the specified coordinates. Returns an array of
-  # CurrentWeather objects.
-  def currentWeatherForCities(lat : Float64, lon : Float64, cnt : Int32)
-    address = @@base_address + "/find?lat=#{lat}&lon=#{lon}&cnt=#{cnt}&" + HTTP::Params.encode({ "APPID" => @key })
-    getCurrentWeather address
-  end
-
-  # Requests current weather information for multiple cities by passing in an array
-  # of city IDs. Returns an array of CurrentWeather objects.
-  def currentWeatherForCities(id : Array(Int32))
-    params = { "APPID" => @key }
-    ids = id.to_s.lchop.rchop.split.join
-    address = @@base_address + "/group?id=#{ids}&" + HTTP::Params.encode(params)
-    getCurrentWeather address
-  end
-
   private def get_current_weather(address : String, input_params : Hash(String, _) )
     params = { "APPID" => @key }
     input_params.each do |k,v|
@@ -48,9 +23,7 @@ class OpenWeatherMap::Client
       end
     end
 
-    puts params
     address += HTTP::Params.encode(params)
-    puts address
 
     response = HTTP::Client.get address
     JSON.parse(response.body)
@@ -68,29 +41,36 @@ class OpenWeatherMap::Client
     if 200 <= value["cod"].as_i < 300
       CurrentWeather.new(value)
     else
-      value["message"].as_s
+      value["cod"].as_s + ":" + value["message"].as_s
     end
   end
 
+  # Requests current weather information for a single city by passing in required
+  # parameters as a hash.
+  # The Hash must have one of the following sets of keys:
+  # lat, lon, cnt : Query for cnt number of cities nearest to the lat and lon
+  # coordinates provided.
+  # bbox : Query for all cities within a rectangle of coordinates provided.
+  # id : Query by a list of city IDs.
   def current_weather_for_cities(params : Hash(String, _) )
     case
-    when params.keys.includes?("lat") && params.keys.includes?("lon") && params.keys.includes?("cnt")
-      address = @@base_address + "find?"
     when params.keys.includes?("bbox")
       address = @@base_address + "bbox?"
+    when params.keys.includes?("lat") && params.keys.includes?("lon") && params.keys.includes?("cnt")
+      address = @@base_address + "find?"
     when params.keys.includes?("id")
-      address = @@base_address + "id?"
+      address = @@base_address + "group?"
     else
       return "Invalid Parameters"
     end
     value = get_current_weather(address, params)
-    if "200" <= value["cod"].as_s < "300"
+    if value.as_h.has_key? "list"
       cities = value["list"]
       cities.map do |city|
         CurrentWeather.new(city)
       end
     else
-      value["message"].as_s
+      value["cod"].as_s + ":" + value["message"].as_s
     end
   end
 end
