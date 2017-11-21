@@ -2,7 +2,7 @@ require "./weather"
 
 # Contains all the information on the current weather status for any city.
 class OpenWeatherMap::CurrentWeather < OpenWeatherMap::Weather
-  getter time : Time
+  #getter time : Time
   getter name : String
   getter id : Int32
 
@@ -10,7 +10,7 @@ class OpenWeatherMap::CurrentWeather < OpenWeatherMap::Weather
   def initialize(value : JSON::Any)
     super
 
-    @time = Time.now
+    #@time = Time.now
     @name = value["name"].as_s
     @id = value["id"].as_i
   end
@@ -23,7 +23,7 @@ class OpenWeatherMap::CurrentWeather < OpenWeatherMap::Weather
 
   # Outputs weather in a human readable format.
   def simpleOutput
-    output = "Temperature in #{@name} is #{@temp} degrees, with #{@weather_description}. "
+    output = "Temperature in #{@name} at #{@time} is #{@temp} degrees, with #{@weather_description}. "
 
     if @windSpeed > 5 && @temp < 10
       windChill = (13.12 + 0.6215 * @temp - 11.37 * @windSpeed ** 0.16 + 0.3965 * @temp * @windSpeed ** 0.16).round(1)
