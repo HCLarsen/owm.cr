@@ -83,7 +83,7 @@ class OpenWeatherMap::Client
   # lat & lon : Querying by latitudinal and longitudinal values.
   # zip : For American addresses, querying by the zip code.
   def sunrise_sunset_for_city(params : Hash(String, _) )
-    value = get_weather(@@base_address + "weaher?", params)
+    value = get_weather(@@base_address + "weather?", params)
     cod = value["cod"].as_i? || value["cod"].as_s.to_i
     if 200 <= cod < 300
       [Time.epoch(value["sys"]["sunrise"].as_i).to_local, Time.epoch(value["sys"]["sunset"].as_i).to_local]

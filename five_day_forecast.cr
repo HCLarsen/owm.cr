@@ -16,7 +16,6 @@ class OpenWeatherMap::FiveDayForecast
 
     forecast = value["list"]
     @list = forecast.map do |e|
-      #puts "element: #{e}"
       Weather.new(e)
     end
   end
@@ -30,7 +29,9 @@ class OpenWeatherMap::FiveDayForecast
   def simple_output
     output = "5 day/3 hour forecast for #{@name}: "
     @list.each do |e|
-      output += "#{e.temp} at #{e.time}"
+      output += "\n#{e.temp} at #{e.time.to_s("%a %b %-d %H:%M")}"
+      output += " with #{e.snow}mm of snow expected." if e.snow > 0
+      output += " with #{e.rain}mm of snow expected." if e.rain > 0
     end
     output
   end
