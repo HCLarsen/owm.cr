@@ -19,11 +19,12 @@ class OpenWeatherMap::Client
   # lat & lon : Querying by latitudinal and longitudinal values.
   # zip : For American addresses, querying by the zip code.
   def current_weather_for_city(params : Hash(String, _) )
-    value = get_current_weather(@@base_address + "weather?", params)
-    if 200 <= value["cod"].as_i < 300
+    value = get_weather(@@base_address + "weather?", params)
+    cod = value["cod"].as_i? || value["cod"].as_s.to_i
+    if 200 <= cod < 300
       CurrentWeather.new(value)
     else
-      value["cod"].as_s + ":" + value["message"].as_s
+      "#{cod}:#{value["message"]}"
     end
   end
 
@@ -45,14 +46,15 @@ class OpenWeatherMap::Client
     else
       return "Invalid Parameters"
     end
-    value = get_current_weather(address, params)
+    value = get_weather(address, params)
     if value.as_h.has_key? "list"
       cities = value["list"]
       cities.map do |city|
         CurrentWeather.new(city)
       end
     else
-      value["cod"].as_s + ":" + value["message"].as_s
+      cod = value["cod"].as_i? || value["cod"].as_s.to_i
+      "#{cod}:#{value["message"]}"
     end
   end
 
@@ -63,29 +65,16 @@ class OpenWeatherMap::Client
   # id : Querying by the city ID.
   # lat & lon : Querying by latitudinal and longitudinal values.
   # zip : For American addresses, querying by the zip code.
-  def five_day_forecast_for_city(input_params : Hash(String, _) )
-    params = { "APPID" => @key }
-    input_params.each do |k,v|
-      case v
-      when Array
-        params[k] = v.to_s.lchop.rchop.split.join
-      when String
-        params[k] = v
-      else
-        params[k] = v.to_s
-      end
-    end
-    address = @@base_address + "forecast?" + HTTP::Params.encode(params)
-    #puts address
-    response = HTTP::Client.get address
-    value = JSON.parse(response.body)
-    #puts value
-    if 200 <= value["cod"].as_s.to_i < 300
+  def five_day_forecast_for_city(params : Hash(String, _) )
+    value = get_weather(@@base_address + "forecast?", params)
+    cod = value["cod"].as_i? || value["cod"].as_s.to_i
+    if 200 <= cod < 300
       FiveDayForecast.new(value)
     else
-      value["cod"].as_s + ":" + value["message"].as_s
+      "#{cod}:#{value["message"]}"
     end
   end
+
   # Requests sunrise and sunset times for a single city by passing in required
   # parameters as a hash.
   # The Hash must have one of the following sets of keys:
@@ -94,15 +83,16 @@ class OpenWeatherMap::Client
   # lat & lon : Querying by latitudinal and longitudinal values.
   # zip : For American addresses, querying by the zip code.
   def sunrise_sunset_for_city(params : Hash(String, _) )
-    value = get_current_weather(@@base_address + "weather?", params)
-    if 200 <= value["cod"].as_i < 300
+    value = get_weather(@@base_address + "weaher?", params)
+    cod = value["cod"].as_i? || value["cod"].as_s.to_i
+    if 200 <= cod < 300
       [Time.epoch(value["sys"]["sunrise"].as_i).to_local, Time.epoch(value["sys"]["sunset"].as_i).to_local]
     else
-      value["cod"].as_s + ":" + value["message"].as_s
+      "#{cod}:#{value["message"]}"
     end
   end
 
-  private def get_current_weather(address : String, input_params : Hash(String, _) )
+  private def get_weather(address : String, input_params : Hash(String, _) )
     params = { "APPID" => @key }
     input_params.each do |k,v|
       case v
