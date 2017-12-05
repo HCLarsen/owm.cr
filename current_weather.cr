@@ -10,7 +10,6 @@ class OpenWeatherMap::CurrentWeather < OpenWeatherMap::Weather
   def initialize(value : JSON::Any)
     super
 
-    #@time = Time.now
     @name = value["name"].as_s
     @id = value["id"].as_i
   end
@@ -22,7 +21,7 @@ class OpenWeatherMap::CurrentWeather < OpenWeatherMap::Weather
   end
 
   # Outputs weather in a human readable format.
-  def simpleOutput
+  def simple_output
     output = "Temperature in #{@name} at #{@time} is #{@temp} degrees, with #{@weather_description}. "
 
     if @windSpeed > 5 && @temp < 10

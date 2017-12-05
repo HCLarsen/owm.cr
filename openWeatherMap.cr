@@ -19,7 +19,7 @@ weather = OpenWeatherMap::Client.new(key)
 #currentWeather = weather.current_weather_for_city(params)
 #case currentWeather
 #when OpenWeatherMap::CurrentWeather
-#  puts currentWeather.simpleOutput
+#  puts currentWeather.simple_output
 #else
 #  puts currentWeather
 #end
@@ -40,8 +40,17 @@ currentWeather = weather.current_weather_for_cities(params)
 case currentWeather
 when Array(OpenWeatherMap::CurrentWeather)
   currentWeather.each do |current|
-    puts "IDs: " + current.simpleOutput
+    puts "IDs: " + current.simple_output
   end
 else
   puts currentWeather
+end
+
+params = { "lat" => 43.5, "lon" => -79.5}
+forecast = weather.five_day_forecast_for_city(params)
+case forecast
+when OpenWeatherMap::FiveDayForecast
+  puts forecast.simple_output
+else
+  puts forecast
 end

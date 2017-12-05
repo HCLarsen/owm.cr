@@ -25,7 +25,6 @@ class OpenWeatherMap::Weather
 
   # Creates a new instance of CurrentWeather from the information in a JSON::Any object
   def initialize(value : JSON::Any)
-    #puts value
     @time = Time.epoch(value["dt"].as_i).to_local
     @weather_id = value["weather"][0]["id"].as_i
     @weather_main = value["weather"][0]["main"].as_s
@@ -43,7 +42,7 @@ class OpenWeatherMap::Weather
     @windSpeed = (value["wind"]["speed"].as_i? || value["wind"]["speed"].as_f.to_i)
     @windDirection = (value["wind"]["deg"].as_i? || value["wind"]["deg"].as_f.to_i)
     @clouds = value["clouds"]["all"].as_i
-    @rain = (value["rain"]?.try(&.as_h) || { String => Hash })["3h"]?.try(&.to_s.to_i) || 0
-    @snow = (value["snow"]?.try(&.as_h) || { String => Hash })["3h"]?.try(&.to_s.to_i) || 0
+    @rain = (value["rain"]?.try(&.as_h) || { String => Hash })["3h"]?.try(&.to_s.to_f.round(0).to_i) || 0
+    @snow = (value["snow"]?.try(&.as_h) || { String => Hash })["3h"]?.try(&.to_s.to_f.round(0).to_i) || 0
   end
 end
