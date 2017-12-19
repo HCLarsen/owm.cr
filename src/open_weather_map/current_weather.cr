@@ -24,11 +24,11 @@ class OpenWeatherMap::CurrentWeather < OpenWeatherMap::Weather
   def simple_output
     output = "Temperature in #{@name} at #{@time} is #{@temp} degrees, with #{@weather_description}. "
 
-    if @windSpeed > 5 && @temp < 10
-      windChill = (13.12 + 0.6215 * @temp - 11.37 * @windSpeed ** 0.16 + 0.3965 * @temp * @windSpeed ** 0.16).round(1)
-      output += "Wind Speed is #{(@windSpeed * 3.6).round(1)}k/h, with a windchill of #{windChill} degrees."
+    if @wind_speed > 5 && @temp < 10
+      windChill = (13.12 + 0.6215 * @temp - 11.37 * @wind_speed ** 0.16 + 0.3965 * @temp * @wind_speed ** 0.16).round(1)
+      output += "Wind Speed is #{(@wind_speed * 3.6).round(1)}k/h, with a windchill of #{windChill} degrees."
     else
-      output += "Wind Speed is #{(@windSpeed * 3.6).round(1)}km/h."
+      output += "Wind Speed is #{(@wind_speed * 3.6).round(1)}km/h."
     end
 
     output

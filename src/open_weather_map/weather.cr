@@ -1,5 +1,3 @@
-require "benchmark"
-
 # Contains all the information on the current weather status for any city.
 class OpenWeatherMap::Weather
   getter time : Time
@@ -17,8 +15,8 @@ class OpenWeatherMap::Weather
   getter ground_level : Int32
   getter humidity : Int32
 
-  getter windSpeed : Int32
-  getter windDirection : Int32
+  getter wind_speed : Int32
+  getter wind_direction : Int32
   getter clouds : Int32
   getter rain : Int32
   getter snow : Int32
@@ -39,8 +37,8 @@ class OpenWeatherMap::Weather
     @ground_level = value["main"]["ground_level"]? ? (value["main"]["ground_level"].as_i? || value["main"]["ground_level"].as_f.to_i) : 0
     @humidity = value["main"]["humidity"].as_i
 
-    @windSpeed = (value["wind"]["speed"].as_i? || value["wind"]["speed"].as_f.to_i)
-    @windDirection = (value["wind"]["deg"].as_i? || value["wind"]["deg"].as_f.to_i)
+    @wind_speed = (value["wind"]["speed"].as_i? || value["wind"]["speed"].as_f.to_i)
+    @wind_direction = (value["wind"]["deg"].as_i? || value["wind"]["deg"].as_f.to_i)
     @clouds = value["clouds"]["all"].as_i
     @rain = (value["rain"]?.try(&.as_h) || { String => Hash })["3h"]?.try(&.to_s.to_f.round(0).to_i) || 0
     @snow = (value["snow"]?.try(&.as_h) || { String => Hash })["3h"]?.try(&.to_s.to_f.round(0).to_i) || 0
