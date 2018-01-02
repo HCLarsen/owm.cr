@@ -1,46 +1,134 @@
+require "json"
+
 # Contains all the information on the current weather status for any city.
 class OpenWeatherMap::Weather
-  getter time : Time
-
-  getter weather_id : Int32
-  getter weather_main : String
-  getter weather_description : String
-  getter weather_icon : String
-
-  getter temp : Float64
-  getter temp_min : Float64
-  getter temp_max : Float64
-  getter pressure : Int32
-  getter sea_level : Int32
-  getter ground_level : Int32
-  getter humidity : Int32
-
-  getter wind_speed : Int32
-  getter wind_direction : Int32
-  getter clouds : Int32
-  getter rain : Int32
-  getter snow : Int32
-
-  # Creates a new instance of CurrentWeather from the information in a JSON::Any object
-  def initialize(value : JSON::Any)
-    @time = Time.epoch(value["dt"].as_i).to_local
-    @weather_id = value["weather"][0]["id"].as_i
-    @weather_main = value["weather"][0]["main"].as_s
-    @weather_description = value["weather"][0]["description"].as_s
-    @weather_icon = value["weather"][0]["icon"].as_s
-
-    @temp = ((value["main"]["temp"].as_f? || value["main"]["temp"].as_i.to_f) - 273.15).round(1)
-    @temp_min = ((value["main"]["temp_min"].as_f? || value["main"]["temp_min"].as_i.to_f) - 273.15).round(1)
-    @temp_max = ((value["main"]["temp_max"].as_f? || value["main"]["temp_max"].as_i.to_f) - 273.15).round(1)
-    @pressure = (value["main"]["pressure"].as_i? || value["main"]["pressure"].as_f.to_i)
-    @sea_level = value["main"]["sea_level"]? ? (value["main"]["sea_level"].as_i? || value["main"]["sea_level"].as_f.to_i) : 0
-    @ground_level = value["main"]["ground_level"]? ? (value["main"]["ground_level"].as_i? || value["main"]["ground_level"].as_f.to_i) : 0
-    @humidity = value["main"]["humidity"].as_i
-
-    @wind_speed = (value["wind"]["speed"].as_i? || value["wind"]["speed"].as_f.to_i)
-    @wind_direction = (value["wind"]["deg"].as_i? || value["wind"]["deg"].as_f.to_i)
-    @clouds = value["clouds"]["all"].as_i
-    @rain = (value["rain"]?.try(&.as_h) || { String => Hash })["3h"]?.try(&.to_s.to_f.round(0).to_i) || 0
-    @snow = (value["snow"]?.try(&.as_h) || { String => Hash })["3h"]?.try(&.to_s.to_f.round(0).to_i) || 0
+  # Custom converters for values that may appear as an Int or as a Float
+  class NumToInt
+    def self.from_json(pull : JSON::PullParser)
+      case pull.kind
+      when :float
+        pull.read_float.round.to_i
+      when :int
+        pull.read_int.to_i
+      else
+        raise "Expected float or int but was #{pull.kind}"
+      end
+    end
   end
+
+  class NumToFloat
+    def self.from_json(pull : JSON::PullParser)
+      case pull.kind
+      when :int
+        pull.read_int.to_f
+      when :float
+        pull.read_float
+      else
+        raise "Expected float or int but was #{pull.kind}"
+      end
+    end
+  end
+
+  JSON.mapping(
+    time: { type: Time, key: "dt", setter: false, converter: Time::EpochConverter },
+    main: { type: Main, getter: false, setter: false },
+    wind: { type: Wind, getter: false, setter: false },
+    info: { type: Array(Info), key: "weather", getter: false, setter: false  },
+    clouds: { type: Int32, key: "clouds", root: "all", default: 0, setter: false },
+    rain: { type: Rain, default: Rain.new, setter: false },
+    snow: { type: Snow, default: Snow.new, setter: false },
+  )
+
+  # Structs for mapping the json subobjects within returned data.
+  struct Main
+    JSON.mapping(
+      temp: { type: Float64 },
+      pressure: { type: Int32, converter: NumToInt },
+      humidity: { type: Int32 },
+      temp_min: { type: Float64 },
+      temp_max: { type: Float64 },
+      grnd_level: { type: Int32, converter: NumToInt, nilable: true },
+      sea_level: { type: Int32, converter: NumToInt, nilable: true },
+    )
+  end
+
+  struct Info
+    JSON.mapping(
+      id: { type: Int32},
+      main: { type: String },
+      description: { type: String },
+      icon: { type: String },
+    )
+  end
+
+  struct Wind
+    JSON.mapping(
+      speed: { type: Int32, setter: false, converter: NumToInt  },
+      deg: { type: Int32, setter: false, converter: NumToInt  },
+    )
+  end
+
+  # The OpenWeatherMap API returns rain and snow data in one of three ways. Either no top level key at all, a Rain/Snow key with an empty subobject, or a subobject with a key of "3h." The following structs and corresponding getters process all three versions properly.
+
+  struct Rain
+    def initialize
+      @rain = 0.0
+    end
+
+    JSON.mapping(
+      rain: { type: Float64, key: "3h", default: 0.0 }
+    )
+  end
+
+  struct Snow
+    def initialize
+      @snow = 0.0
+    end
+
+    JSON.mapping(
+      snow: { type: Float64, key: "3h", default: 0.0 }
+    )
+  end
+
+  def rain
+    @rain.rain
+  end
+
+  def snow
+    @snow.snow
+  end
+
+  # Custom Getters
+  def sea_level
+    @main.sea_level || @main.pressure
+  end
+
+  def grnd_level
+    @main.grnd_level || @main.pressure
+  end
+
+  # Macros that create top level getter methods for nested properties.
+  {% for name in %w[lon lat] %}
+    def {{name.id}}
+      @coord.{{name.id}}
+    end
+  {% end %}
+
+  {% for name in %w[temp pressure humidity temp_min temp_max] %}
+    def {{name.id}}
+      @main.{{name.id}}
+    end
+  {% end %}
+
+  {% for name in %w[id main description icon] %}
+    def weather_{{name.id}}
+      @info[0].{{name.id}}
+    end
+  {% end %}
+
+  {% for name in %w[speed deg] %}
+    def wind_{{name.id}}
+      @wind.{{name.id}}
+    end
+  {% end %}
 end
