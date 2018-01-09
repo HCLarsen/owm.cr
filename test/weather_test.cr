@@ -67,7 +67,7 @@ class CurrentWeatherTest < Minitest::Test
     assert_equal weather.snow, 0.0
   end
 
-  def test_grnd_level_and_sea_level_default_to_pressure
+  def test_absent_grnd_level_and_sea_level
     assert_equal weather.pressure, weather.sea_level
     assert_equal weather.pressure, weather.grnd_level
   end

@@ -5,39 +5,56 @@ require "json"
 require "/../src/open_weather_map/current_weather"
 
 class CurrentWeatherTest < Minitest::Test
-  def test_parses_json
-    value = JSON.parse(%({"coord":{"lon":-79.5,"lat":43.5},"weather":[{"id":800,"main":"Clear","description":"clear sky","icon":"01n"}],"base":"stations","main":{"temp":277.44,"pressure":1006,"humidity":63,"temp_min":276.15,"temp_max":279.15},"visibility":14484,"wind":{"speed":8.2,"deg":260,"gust":13.4},"clouds":{"all":1},"dt":1513724400,"sys":{"type":1,"id":3721,"message":0.2431,"country":"CA","sunrise":1513687641,"sunset":1513719852},"id":6111708,"name":"Port Credit","cod":200}))
-    currentWeather = OpenWeatherMap::CurrentWeather.new(value)
-    assert_equal currentWeather.name, "Port Credit"
-    assert_equal currentWeather.id, 6111708
-    assert_equal currentWeather.time, Time.epoch(1513724400).to_local
-    assert_equal currentWeather.temp, 4.3
-    assert_equal currentWeather.temp_min, 3
-    assert_equal currentWeather.temp_max, 6
-    assert_equal currentWeather.weather_id, 800
-    assert_equal currentWeather.weather_main, "Clear"
-    assert_equal currentWeather.weather_description, "clear sky"
-    assert_equal currentWeather.weather_icon, "01n"
-    assert_equal currentWeather.wind_speed, 8
-    assert_equal currentWeather.pressure, 1006
-    assert_equal currentWeather.humidity, 63
-    assert_equal currentWeather.snow, 0
-    assert_equal currentWeather.rain, 0
+  def tromso
+    @tromso ||= OpenWeatherMap::CurrentWeather.from_json(%({"coord":{"lon":18.96,"lat":69.65},"weather":[{"id":804,"main":"Clouds","description":"overcast clouds","icon":"04d"}],"base":"stations","main":{"temp":270.312,"pressure":986.36,"humidity":100,"temp_min":270.312,"temp_max":270.312,"sea_level":1026.97,"grnd_level":986.36},"wind":{"speed":1.11,"deg":156},"clouds":{"all":92},"dt":1515473249,"sys":{"message":0.0037,"country":"NO","sunrise":0,"sunset":0},"id":3133895,"name":"Tromso","cod":200}))
   end
 
-#  def test_fetches_weather_from_coordinates
-#    key = ENV["OWM"]
-#    client = OpenWeatherMap::Client.new(key)
-#    params = { "lat" => 43.5, "lon" => -79.5}
-#    currentWeather = client.current_weather_for_city(params)
-#    assert_equal currentWeather.class, OpenWeatherMap::CurrentWeather
-#  end
-#
-#  def test_doesnt_fetch_without_params
-#    key = ENV["OWM"]
-#    client = OpenWeatherMap::Client.new(key)
-#    params = {} of String => String
-#    currentWeather = client.current_weather_for_city(params)
-#    assert_equal currentWeather.class, String
-#  end
+  def mississauga
+    @mississauga ||= OpenWeatherMap::CurrentWeather.from_json(%({"coord":{"lon":-79.65,"lat":43.59},"weather":[{"id":500,"main":"Rain","description":"light rain","icon":"10n"}],"base":"stations","main":{"temp":274.14,"pressure":1013,"humidity":64,"temp_min":273.15,"temp_max":275.15},"visibility":14484,"wind":{"speed":6.2,"deg":270},"clouds":{"all":90},"dt":1515471120,"sys":{"type":1,"id":3721,"message":0.0046,"country":"CA","sunrise":1515502264,"sunset":1515535256},"id":6075357,"name":"Mississauga","cod":200}))
+  end
+
+  def test_parses_city_info
+    assert_equal mississauga.name, "Mississauga"
+    assert_equal mississauga.id, 6075357
+    assert_equal mississauga.time, Time.epoch(1515471120).to_local
+  end
+
+  def test_coords
+    assert_equal mississauga.lat, 43.59
+    assert_equal mississauga.lon, -79.65
+  end
+
+  def test_weather_info
+    assert_equal mississauga.weather_id, 500
+    assert_equal mississauga.weather_main, "Rain"
+    assert_equal mississauga.weather_description, "light rain"
+    assert_equal mississauga.weather_icon, "10n"
+  end
+
+  def test_main_info
+    assert_equal mississauga.temp, 274.14
+    assert_equal mississauga.temp_min, 273.15
+    assert_equal mississauga.temp_max, 275.15
+    assert_equal mississauga.pressure, 1013
+    assert_equal mississauga.humidity, 64
+  end
+
+  def test_wind_info
+    assert_equal mississauga.wind_speed, 6
+    assert_equal mississauga.wind_deg, 270
+  end
+
+  def test_float_pressure_processed_as_int
+    assert_equal tromso.pressure, 986
+  end
+
+  def test_grnd_level_and_sea_level
+    assert_equal tromso.grnd_level, 986
+    assert_equal tromso.sea_level, 1027
+  end
+
+  def test_absent_grnd_level_and_sea_level
+    assert_equal mississauga.pressure, mississauga.grnd_level
+    assert_equal mississauga.pressure, mississauga.sea_level
+  end
 end

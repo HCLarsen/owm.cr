@@ -2,20 +2,24 @@ require "./weather"
 
 # Contains all the information on the current weather status for any city.
 class OpenWeatherMap::CurrentWeather < OpenWeatherMap::Weather
-  #JSON.mapping(
-  #  name: { type: String, setter: false },
-  #  id: { type: Int32, setter: false },
-  #  time: { type: Time, setter: false },
-  #)
-  getter name : String
-  getter id : Int32
+  JSON.mapping(
+    name: { type: String, setter: false },
+    id: { type: Int32, setter: false },
+    time: { type: Time, key: "dt", setter: false, converter: Time::EpochConverter },
+    coord: { type: Coord, getter: false, setter: false },
+    main: { type: Main, getter: false, setter: false },
+    wind: { type: Wind, getter: false, setter: false },
+    info: { type: Array(Info), key: "weather", getter: false, setter: false  },
+    clouds: { type: Int32, key: "clouds", root: "all", default: 0, setter: false },
+    rain: { type: Rain, default: Rain.new, setter: false },
+    snow: { type: Snow, default: Snow.new, setter: false },
+  )
 
-  # Creates a new instance of CurrentWeather from the information in a JSON::Any object
-  def initialize(value : JSON::Any)
-    super
-
-    @name = value["name"].as_s
-    @id = value["id"].as_i
+  struct Coord
+    JSON.mapping(
+      lon: { type: Float64, setter: false },
+      lat: { type: Float64, setter: false },
+    )
   end
 
   # Returns the time passed since the instantiation of the object. Useful for
@@ -25,7 +29,7 @@ class OpenWeatherMap::CurrentWeather < OpenWeatherMap::Weather
   end
 
   # Outputs weather in a human readable format.
-  #def simple_output
+  # def simple_output
   #  output = "Temperature in #{@name} at #{@time} is #{@temp} degrees, with #{@weather_description}. "
 #
 #    if @wind_speed > 5 && @temp < 10
