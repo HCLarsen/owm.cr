@@ -33,7 +33,7 @@ class OpenWeatherMap::Weather
     time: { type: Time, key: "dt", setter: false, converter: Time::EpochConverter },
     main: { type: Main, getter: false, setter: false },
     wind: { type: Wind, getter: false, setter: false },
-    info: { type: Array(Info), key: "weather", getter: false, setter: false  },
+    conditions: { type: Array(Conditions), key: "weather", getter: false, setter: false  },
     clouds: { type: Int32, key: "clouds", root: "all", default: 0, setter: false },
     rain: { type: Rain, default: Rain.new, setter: false },
     snow: { type: Snow, default: Snow.new, setter: false },
@@ -52,7 +52,7 @@ class OpenWeatherMap::Weather
     )
   end
 
-  struct Info
+  struct Conditions
     JSON.mapping(
       id: { type: Int32},
       main: { type: String },
@@ -122,7 +122,7 @@ class OpenWeatherMap::Weather
 
   {% for name in %w[id main description icon] %}
     def weather_{{name.id}}
-      @info[0].{{name.id}}
+      @conditions[0].{{name.id}}
     end
   {% end %}
 

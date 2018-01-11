@@ -28,7 +28,7 @@ class OpenWeatherMap::Client
     end
   end
 
-  # Requests current weather information for a single city by passing in required
+  # Requests current weather information for multiple cities by passing in required
   # parameters as a hash.
   # The Hash must have one of the following sets of keys:
   # lat, lon, cnt : Query for cnt number of cities nearest to the lat and lon
