@@ -30,41 +30,41 @@ class CurrentWeatherTest < Minitest::Test
   end
 
   def test_parses_json
-    assert_equal weather.time, Time.epoch(1406106000).to_local
-    assert_equal weather.temp, 298.77
-    assert_equal weather.temp_min, 298.77
-    assert_equal weather.temp_max, 298.774
-    assert_equal weather.weather_id, 804
-    assert_equal weather.weather_main, "Clouds"
-    assert_equal weather.weather_description, "overcast clouds"
-    assert_equal weather.weather_icon, "04d"
-    assert_equal weather.wind_speed, 6
-    assert_equal weather.pressure, 1006
-    assert_equal weather.humidity, 87
-    assert_equal weather.clouds, 88
+    assert_equal Time.epoch(1406106000).to_local, weather.time
+    assert_equal 298.77, weather.temp
+    assert_equal 298.77, weather.temp_min
+    assert_equal 298.774, weather.temp_max
+    assert_equal 804, weather.weather_id
+    assert_equal "Clouds", weather.weather_main
+    assert_equal "overcast clouds", weather.weather_description
+    assert_equal "04d", weather.weather_icon
+    assert_equal 6, weather.wind_speed
+    assert_equal 1006, weather.pressure
+    assert_equal 87, weather.humidity
+    assert_equal 88, weather.clouds
   end
 
   def test_rain
-    assert_equal london.rain, 3.325
+    assert_equal 3.325, london.rain
   end
 
   def test_empty_rain_key
     # At times, the API will return rain data as thus: rain:{}. This should still return 0.0.
-    assert_equal london_no_rain.rain, 0.0
+    assert_equal 0.0, london_no_rain.rain
   end
 
   def test_snow
-    assert_equal port_credit.snow, 0.405
+    assert_equal 0.405, port_credit.snow
   end
 
   def test_empty_snow_key
     # At times, the API will return snow data as thus: snow:{}. This should still return 0.0.
-    assert_equal port_credit_no_snow.snow, 0.0
+    assert_equal 0.0, port_credit_no_snow.snow
   end
 
   def test_rain_and_snow_default_to_0
-    assert_equal weather.rain, 0.0
-    assert_equal weather.snow, 0.0
+    assert_equal 0.0, weather.rain
+    assert_equal 0.0, weather.snow
   end
 
   def test_absent_grnd_level_and_sea_level

@@ -33,7 +33,7 @@ class OpenWeatherMap::Weather
     time: { type: Time, key: "dt", setter: false, converter: Time::EpochConverter },
     main: { type: Main, getter: false, setter: false },
     wind: { type: Wind, getter: false, setter: false },
-    conditions: { type: Array(Conditions), key: "weather", getter: false, setter: false  },
+    conditions: { type: Array(Conditions), key: "weather", setter: false  },
     clouds: { type: Int32, key: "clouds", root: "all", default: 0, setter: false },
     rain: { type: Rain, default: Rain.new, setter: false },
     snow: { type: Snow, default: Snow.new, setter: false },
