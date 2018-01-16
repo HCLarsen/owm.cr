@@ -1,38 +1,38 @@
 require "./weather"
 
-# Contains all the information on the current weather status for any city.
+# Provides a 5 day weather forecast, with 3 hour intervals.
 class OpenWeatherMap::FiveDayForecast
-  getter time : Time
-  getter name : String
-  getter id : Int32
-  getter list : Array(Weather)
+  JSON.mapping(
+    list: { type: Array(Weather) },
+    city: { type: City, getter: false, setter: false }
+  )
 
-  # Creates a new instance of CurrentWeather from the information in a JSON::Any object
-  def initialize(value : JSON::Any)
-    @time = Time.now
-    @name = value["city"]["name"].as_s
-    @id = value["city"]["id"].as_i
-    @list = [] of Weather
+  struct City
+    JSON.mapping(
+      name: { type: String, setter: false },
+      id: { type: Int32, setter: false },
+      country: { type: String, setter: false },
+      coord: { type: Coord, setter: false },
+    )
+  end
 
-    forecast = value["list"]
-    @list = forecast.map do |e|
-      Weather.new(e)
+  struct Coord
+    JSON.mapping(
+      lon: { type: Float64, setter: false },
+      lat: { type: Float64, setter: false },
+    )
+  end
+
+  # Macros that create top level getter methods for nested properties.
+  {% for name in %w[name id country] %}
+    def {{name.id}}
+      @city.{{name.id}}
     end
-  end
+  {% end %}
 
-  # Returns the time passed since the instantiation of the object. Useful for
-  # checking how recent the weather data is.
-  def timePassed
-    Time.now - @time
-  end
-
-  def simple_output
-    output = "5 day/3 hour forecast for #{@name}: "
-    @list.each do |e|
-      output += "\n#{e.temp} at #{e.time.to_s("%a %b %-d %H:%M")}"
-      output += " with #{e.snow}mm of snow expected." if e.snow > 0
-      output += " with #{e.rain}mm of snow expected." if e.rain > 0
+  {% for name in %w[lon lat] %}
+    def {{name.id}}
+      @city.coord.{{name.id}}
     end
-    output
-  end
+  {% end %}
 end

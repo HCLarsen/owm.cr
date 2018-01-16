@@ -24,6 +24,7 @@ class CurrentWeatherTest < Minitest::Test
   def test_parses_city_info
     assert_equal "Mississauga", mississauga.name
     assert_equal 6075357, mississauga.id
+    assert_equal "CA", mississauga.country
     assert_equal Time.epoch(1515471120).to_local, mississauga.time
   end
 
@@ -65,7 +66,7 @@ class CurrentWeatherTest < Minitest::Test
 
   def test_rain_and_snow_default_to_0
     assert_equal 0.0, mississauga.snow
-    assert_equal 0.0, mississauga.rain    
+    assert_equal 0.0, mississauga.rain
   end
 
   def test_float_pressure_processed_as_int
