@@ -106,6 +106,6 @@ class OpenWeatherMap::Client
 
     address += HTTP::Params.encode(params)
 
-    response = HTTP::Client.get address
+    HTTP::Client.get address
   end
 end

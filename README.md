@@ -1,6 +1,6 @@
 # Crystal Open Weather Map Interface
 
-A Crystal interface for the Open Weather Map API.
+A Crystal interface for the Open Weather Map API. Currently, this library supports all the options available to Free Accounts, with the exception of Weather Map Layers.
 
 ## Installation
 
@@ -16,13 +16,19 @@ dependencies:
 
 ```crystal
 require "open_weather_map"
+
+client = OpenWeatherMap::Client.new(USERS_OWM_KEY)
+params = { "q" => "Toronto" }
+currentWeather = client.current_weather_for_city(params)
+
+puts "The current weather in Toronto is #{currentWeather.temp}"
 ```
 
-TODO: Write usage instructions here
+Note: Users must obtain their own API key from http://openweathermap.org/appid, and substitute their key as USERS_OWM_KEY.
 
 ## Development
 
-TODO: Write development instructions here
+Tests for the Client class are designed to use a key stored as an environment variable with the name OWM_TEST. Any tests using the Client class will not run without this environment variable.
 
 ## Contributing
 
