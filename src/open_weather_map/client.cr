@@ -19,12 +19,11 @@ class OpenWeatherMap::Client
   # lat & lon : Querying by latitudinal and longitudinal values.
   # zip : For American addresses, querying by the zip code.
   def current_weather_for_city(params : Hash(String, _) )
-    value = get_weather(@@base_address + "weather?", params)
-    cod = value["cod"].as_i? || value["cod"].as_s.to_i
-    if 200 <= cod < 300
-      CurrentWeather.new(value)
+    data = get_data(@@base_address + "weather?", params)
+    if 200 <= data.status_code < 300
+      CurrentWeather.from_json(data.body)
     else
-      "#{cod}:#{value["message"]}"
+      "#{data.status_code}:#{data.status_message}"
     end
   end
 
@@ -46,15 +45,16 @@ class OpenWeatherMap::Client
     else
       return "Invalid Parameters"
     end
-    value = get_weather(address, params)
-    if value.as_h.has_key? "list"
+
+    data = get_data(address, params)
+    if 200 <= data.status_code < 300
+      value = JSON.parse(data.body)
       cities = value["list"]
       cities.map do |city|
-        CurrentWeather.new(city)
+        CurrentWeather.from_json(city.to_json.to_s)
       end
     else
-      cod = value["cod"].as_i? || value["cod"].as_s.to_i
-      "#{cod}:#{value["message"]}"
+      "#{data.status_code}:#{data.status_message}"
     end
   end
 
@@ -66,12 +66,11 @@ class OpenWeatherMap::Client
   # lat & lon : Querying by latitudinal and longitudinal values.
   # zip : For American addresses, querying by the zip code.
   def five_day_forecast_for_city(params : Hash(String, _) )
-    value = get_weather(@@base_address + "forecast?", params)
-    cod = value["cod"].as_i? || value["cod"].as_s.to_i
-    if 200 <= cod < 300
-      FiveDayForecast.new(value)
+    data = get_data(@@base_address + "forecast?", params)
+    if 200 <= data.status_code< 300
+      FiveDayForecast.from_json(data.body)
     else
-      "#{cod}:#{value["message"]}"
+      "#{data.status_code}:#{data.status_message}"
     end
   end
 
@@ -83,16 +82,16 @@ class OpenWeatherMap::Client
   # lat & lon : Querying by latitudinal and longitudinal values.
   # zip : For American addresses, querying by the zip code.
   def sunrise_sunset_for_city(params : Hash(String, _) )
-    value = get_weather(@@base_address + "weather?", params)
-    cod = value["cod"].as_i? || value["cod"].as_s.to_i
-    if 200 <= cod < 300
+    data = get_data(@@base_address + "weather?", params)
+    if 200 <= data.status_code< 300
+      value = JSON.parse(data.body)
       [Time.epoch(value["sys"]["sunrise"].as_i).to_local, Time.epoch(value["sys"]["sunset"].as_i).to_local]
     else
-      "#{cod}:#{value["message"]}"
+      "#{data.status_code}:#{data.status_message}"
     end
   end
 
-  private def get_weather(address : String, input_params : Hash(String, _) )
+  private def get_data(address : String, input_params : Hash(String, _) )
     params = { "APPID" => @key }
     input_params.each do |k,v|
       case v
@@ -108,6 +107,5 @@ class OpenWeatherMap::Client
     address += HTTP::Params.encode(params)
 
     response = HTTP::Client.get address
-    JSON.parse(response.body)
   end
 end
