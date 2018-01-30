@@ -25,6 +25,10 @@ class CurrentWeatherTest < Minitest::Test
     @london_no_rain ||= OpenWeatherMap::Weather.from_json(%({"dt":1514883600,"main":{"temp":276.7,"temp_min":276.7,"temp_max":277.372,"pressure":1017.68,"sea_level":1025.56,"grnd_level":1017.68,"humidity":77,"temp_kf":-0.67},"weather":[{"id":803,"main":"Clouds","description":"broken clouds","icon":"04d"}],"clouds":{"all":64},"wind":{"speed":3.53,"deg":228.5},"rain":{},"sys":{"pod":"d"},"dt_txt":"2018-01-02 09:00:00"}))
   end
 
+  def legnica
+    @legnica ||= OpenWeatherMap::Weather.from_json(%({"coord":{"lon":16.17,"lat":51.21},"weather":[{"id":803,"main":"Clouds","description":"broken clouds","icon":"04n"}],"base":"stations","main":{"temp":276.15,"pressure":996,"humidity":69,"temp_min":276.15,"temp_max":276.15},"visibility":10000,"wind":{"speed":14.9,"deg":280,"gust":21.1},"clouds":{"all":75},"dt":1516320000,"sys":{"type":1,"id":5375,"message":0.0042,"country":"PL","sunrise":1516344564,"sunset":1516375387},"id":3093692,"name":"Legnica","cod":200}))
+  end
+
   def weather
     @weather ||= OpenWeatherMap::Weather.from_json(%({"dt":1406106000,"main":{"temp":298.77,"temp_min":298.77,"temp_max":298.774, "pressure":1005.93,"humidity":87,"temp_kf":0.26},"weather":[{"id":804,"main":"Clouds","description":"overcast clouds","icon":"04d"}],"clouds":{"all":88},"wind":{"speed":5.71,"deg":229.501},"sys":{"pod":"d"},"dt_txt":"2014-07-23 09:00:00"}))
   end
@@ -70,5 +74,17 @@ class CurrentWeatherTest < Minitest::Test
   def test_absent_grnd_level_and_sea_level
     assert_equal weather.pressure, weather.sea_level
     assert_equal weather.pressure, weather.grnd_level
+  end
+
+  def test_wind_with_gust
+    assert_equal 15, legnica.wind_speed
+    assert_equal 280, legnica.wind_deg
+    assert_equal 21, legnica.wind_gust
+  end
+
+  def test_wind_gust_default_0
+    assert_equal 6, weather.wind_speed
+    assert_equal 230, weather.wind_deg
+    assert_equal 0, weather.wind_gust
   end
 end

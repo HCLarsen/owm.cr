@@ -65,6 +65,7 @@ class OpenWeatherMap::Weather
     JSON.mapping(
       speed: { type: Int32, setter: false, converter: NumToInt  },
       deg: { type: Int32, setter: false, converter: NumToInt  },
+      gust: { type: Int32, default: 0, setter: false, converter: NumToInt  },
     )
   end
 
@@ -126,7 +127,7 @@ class OpenWeatherMap::Weather
     end
   {% end %}
 
-  {% for name in %w[speed deg] %}
+  {% for name in %w[speed deg gust] %}
     def wind_{{name.id}}
       @wind.{{name.id}}
     end

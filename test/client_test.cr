@@ -35,7 +35,26 @@ class ClientTest < Minitest::Test
 
   def test_doesnt_fetch_without_params
     params = {} of String => String
-    currentWeather = client.current_weather_for_city(params)
-    assert_equal currentWeather.class, String
+    response = assert_raises do
+      client.current_weather_for_city(params)
+    end
+    assert_equal "Invalid Parameters", response.message
+  end
+
+  def test_raises_error_on_400
+    params = { "f" => "Mississauga" }
+    response = assert_raises do
+      client.current_weather_for_city(params)
+    end
+    assert_equal "400:Bad Request", response.message
+  end
+
+  def test_raises_error_on_invalid_key
+    bad_client = OpenWeatherMap::Client.new("InvalidKey")
+    params = { "q" => "Mississauga" }
+    response = assert_raises do
+      bad_client.current_weather_for_city(params)
+    end
+    assert_equal "401:Unauthorized", response.message
   end
 end

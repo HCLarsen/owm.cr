@@ -20,11 +20,7 @@ class OpenWeatherMap::Client
   # zip : For American addresses, querying by the zip code.
   def current_weather_for_city(params : Hash(String, _) )
     data = get_data(@@base_address + "weather?", params)
-    if 200 <= data.status_code < 300
-      CurrentWeather.from_json(data.body)
-    else
-      "#{data.status_code}:#{data.status_message}"
-    end
+    CurrentWeather.from_json(data.body)
   end
 
   # Requests current weather information for multiple cities by passing in required
@@ -43,18 +39,14 @@ class OpenWeatherMap::Client
     when params.keys.includes?("id")
       address = @@base_address + "group?"
     else
-      return "Invalid Parameters"
+      raise "Invalid Parameters"
     end
 
     data = get_data(address, params)
-    if 200 <= data.status_code < 300
-      value = JSON.parse(data.body)
-      cities = value["list"]
-      cities.map do |city|
-        CurrentWeather.from_json(city.to_json.to_s)
-      end
-    else
-      "#{data.status_code}:#{data.status_message}"
+    value = JSON.parse(data.body)
+    cities = value["list"]
+    cities.map do |city|
+      CurrentWeather.from_json(city.to_json.to_s)
     end
   end
 
@@ -67,11 +59,7 @@ class OpenWeatherMap::Client
   # zip : For American addresses, querying by the zip code.
   def five_day_forecast_for_city(params : Hash(String, _) )
     data = get_data(@@base_address + "forecast?", params)
-    if 200 <= data.status_code< 300
-      FiveDayForecast.from_json(data.body)
-    else
-      "#{data.status_code}:#{data.status_message}"
-    end
+    FiveDayForecast.from_json(data.body)
   end
 
   # Requests sunrise and sunset times for a single city by passing in required
@@ -83,15 +71,12 @@ class OpenWeatherMap::Client
   # zip : For American addresses, querying by the zip code.
   def sunrise_sunset_for_city(params : Hash(String, _) )
     data = get_data(@@base_address + "weather?", params)
-    if 200 <= data.status_code< 300
-      value = JSON.parse(data.body)
-      [Time.epoch(value["sys"]["sunrise"].as_i).to_local, Time.epoch(value["sys"]["sunset"].as_i).to_local]
-    else
-      "#{data.status_code}:#{data.status_message}"
-    end
+    value = JSON.parse(data.body)
+    [Time.epoch(value["sys"]["sunrise"].as_i).to_local, Time.epoch(value["sys"]["sunset"].as_i).to_local]
   end
 
   private def get_data(address : String, input_params : Hash(String, _) )
+    raise "Invalid Parameters" if input_params.empty?
     params = { "APPID" => @key }
     input_params.each do |k,v|
       case v
@@ -106,6 +91,11 @@ class OpenWeatherMap::Client
 
     address += HTTP::Params.encode(params)
 
-    HTTP::Client.get address
+    data = HTTP::Client.get address
+    if 200 <= data.status_code < 300
+      data
+    else
+      raise "#{data.status_code}:#{data.status_message}"
+    end
   end
 end
