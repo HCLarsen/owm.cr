@@ -44,7 +44,7 @@ class OpenWeatherMap::Client
 
     data = get_data(address, params)
     value = JSON.parse(data.body)
-    cities = value["list"]
+    cities = value["list"].as_a
     cities.map do |city|
       CurrentWeather.from_json(city.to_json.to_s)
     end
@@ -72,7 +72,7 @@ class OpenWeatherMap::Client
   def sunrise_sunset_for_city(params : Hash(String, _) )
     data = get_data(@@base_address + "weather?", params)
     value = JSON.parse(data.body)
-    [Time.epoch(value["sys"]["sunrise"].as_i).to_local, Time.epoch(value["sys"]["sunset"].as_i).to_local]
+    [Time.new(seconds: value["sys"]["sunrise"].as_i64, nanoseconds: 0, location: Time::Location.local), Time.new(seconds: value["sys"]["sunset"].as_i64, nanoseconds: 0, location: Time::Location.local)]
   end
 
   private def get_data(address : String, input_params : Hash(String, _) )

@@ -1,94 +1,107 @@
 require "json"
 
+# Custom converters for values that may appear as an Int or as a Float
+class NumToInt
+  def self.from_json(pull : JSON::PullParser)
+    case pull.kind
+    when JSON::PullParser::Kind::Float
+      pull.read_float.round.to_i
+    when JSON::PullParser::Kind::Int
+      pull.read_int.to_i
+    else
+      raise "Expected float or int but was #{pull.kind}"
+    end
+  end
+end
+
+class NumToFloat
+  def self.from_json(pull : JSON::PullParser)
+    case pull.kind
+    when JSON::PullParser::Kind::Int
+      pull.read_int.to_f
+    when JSON::PullParser::Kind::Float
+      pull.read_float
+    else
+      raise "Expected float or int but was #{pull.kind}"
+    end
+  end
+end
+
 # Contains all the information on the current weather status for any city.
 class OpenWeatherMap::Weather
-  # Custom converters for values that may appear as an Int or as a Float
-  class NumToInt
-    def self.from_json(pull : JSON::PullParser)
-      case pull.kind
-      when :float
-        pull.read_float.round.to_i
-      when :int
-        pull.read_int.to_i
-      else
-        raise "Expected float or int but was #{pull.kind}"
-      end
-    end
-  end
+  include JSON::Serializable
 
-  class NumToFloat
-    def self.from_json(pull : JSON::PullParser)
-      case pull.kind
-      when :int
-        pull.read_int.to_f
-      when :float
-        pull.read_float
-      else
-        raise "Expected float or int but was #{pull.kind}"
-      end
-    end
-  end
-
-  JSON.mapping(
-    time: { type: Time, key: "dt", setter: false, converter: Time::EpochConverter },
-    main: { type: Main, getter: false, setter: false },
-    wind: { type: Wind, getter: false, setter: false },
-    conditions: { type: Array(Conditions), key: "weather", setter: false  },
-    clouds: { type: Int32, key: "clouds", root: "all", default: 0, setter: false },
-    rain: { type: Rain, default: Rain.new, setter: false },
-    snow: { type: Snow, default: Snow.new, setter: false },
-  )
+  @[JSON::Field(key: "dt", converter: Time::EpochConverter)]
+  getter time : Time
+  @main : Main
+  @wind : Wind
+  @[JSON::Field(key: "weather")]
+  getter conditions : Array(Conditions)
+  @[JSON::Field(root: "all")]
+  getter clouds : Int32 = 0
+  @rain : Rain = OpenWeatherMap::Weather::Rain.new
+  @snow : Snow = OpenWeatherMap::Weather::Snow.new
 
   # Structs for mapping the json subobjects within returned data.
   struct Main
-    JSON.mapping(
-      temp: { type: Float64 },
-      pressure: { type: Int32, converter: NumToInt },
-      humidity: { type: Int32 },
-      temp_min: { type: Float64 },
-      temp_max: { type: Float64 },
-      grnd_level: { type: Int32, converter: NumToInt, nilable: true },
-      sea_level: { type: Int32, converter: NumToInt, nilable: true },
-    )
+    include JSON::Serializable
+
+    getter temp : Float64
+    @[JSON::Field(converter: NumToInt)]
+    getter pressure : Int32
+    getter humidity : Int32
+    getter temp_min : Float64
+    getter temp_max : Float64
+    @[JSON::Field(converter: NumToInt)]
+    getter grnd_level : Int32?
+    @[JSON::Field(converter: NumToInt)]
+    getter sea_level : Int32?
   end
 
   struct Conditions
-    JSON.mapping(
-      id: { type: Int32},
-      main: { type: String },
-      description: { type: String },
-      icon: { type: String },
-    )
+    include JSON::Serializable
+
+    getter id : Int32
+    getter main : String
+    getter description : String
+    getter icon : String
   end
 
   struct Wind
-    JSON.mapping(
-      speed: { type: Int32, setter: false, converter: NumToInt  },
-      deg: { type: Int32, setter: false, converter: NumToInt  },
-      gust: { type: Int32, default: 0, setter: false, converter: NumToInt  },
-    )
+    include JSON::Serializable
+
+    @[JSON::Field(converter: NumToInt)]
+    getter speed : Int32
+
+    @[JSON::Field(converter: NumToInt)]
+    getter deg : Int32
+
+    @[JSON::Field(converter: NumToInt)]
+    getter gust : Int32 = 0
   end
 
   # The OpenWeatherMap API returns rain and snow data in one of three ways. Either no top level key at all, a Rain/Snow key with an empty subobject, or a subobject with a key of "3h." The following structs and corresponding getters process all three versions properly.
 
   struct Rain
+    include JSON::Serializable
+
+    @[JSON::Field(key: "3h")]
+    getter rain : Float64 = 0.0
+
     def initialize
       @rain = 0.0
     end
-
-    JSON.mapping(
-      rain: { type: Float64, key: "3h", default: 0.0 }
-    )
   end
 
   struct Snow
+    include JSON::Serializable
+
+    @[JSON::Field(key: "3h")]
+    getter snow : Float64 = 0.0
+
     def initialize
       @snow = 0.0
     end
-
-    JSON.mapping(
-      snow: { type: Float64, key: "3h", default: 0.0 }
-    )
   end
 
   def rain

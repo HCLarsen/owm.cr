@@ -34,7 +34,7 @@ class CurrentWeatherTest < Minitest::Test
   end
 
   def test_parses_json
-    assert_equal Time.epoch(1406106000).to_local, weather.time
+    assert_equal Time.unix(1406106000), weather.time
     assert_equal 298.77, weather.temp
     assert_equal 298.77, weather.temp_min
     assert_equal 298.774, weather.temp_max

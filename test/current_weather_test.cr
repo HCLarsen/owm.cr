@@ -25,7 +25,7 @@ class CurrentWeatherTest < Minitest::Test
     assert_equal "Mississauga", mississauga.name
     assert_equal 6075357, mississauga.id
     assert_equal "CA", mississauga.country
-    assert_equal Time.epoch(1515471120).to_local, mississauga.time
+    assert_equal Time.unix(1515471120), mississauga.time
   end
 
   def test_coords
