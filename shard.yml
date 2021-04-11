@@ -7,8 +7,11 @@ authors:
 development_dependencies:
   minitest:
     github: ysbaddaden/minitest.cr
-    version: "0.5.1"
+    version: "1.0.1"
+  webmock:
+    github: manastech/webmock.cr
+    branch: master
 
-crystal: 0.35.1
+crystal: ">= 0.36.0, < 2.0.0"
 
 license: MIT

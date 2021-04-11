@@ -3,10 +3,11 @@ require "minitest/autorun"
 require "json"
 
 require "/../src/open_weather_map/client"
+require "./webmocks.cr"
 
 class ClientTest < Minitest::Test
   def client
-    @client ||= OpenWeatherMap::Client.new(ENV["OWM_TEST"])
+    @client ||= OpenWeatherMap::Client.new("NOTAREALKEY")
   end
 
   def test_fetches_current_weather_from_coordinates
