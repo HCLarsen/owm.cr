@@ -28,19 +28,19 @@ class NumToFloat
 end
 
 # Contains all the information on the current weather status for any city.
-class OpenWeatherMap::Weather
+class OpenWeatherMap::Conditions
   include JSON::Serializable
 
   @[JSON::Field(key: "dt", converter: Time::EpochConverter)]
   getter time : Time
   @main : Main
   @wind : Wind
-  @[JSON::Field(key: "weather")]
-  getter conditions : Array(Conditions)
+  # @[JSON::Field(key: "weather")]
+  getter weather : Array(Weather)
   @[JSON::Field(root: "all")]
   getter clouds : Int32 = 0
-  @rain : Rain = OpenWeatherMap::Weather::Rain.new
-  @snow : Snow = OpenWeatherMap::Weather::Snow.new
+  @rain : Rain = OpenWeatherMap::Conditions::Rain.new
+  @snow : Snow = OpenWeatherMap::Conditions::Snow.new
 
   # Structs for mapping the json subobjects within returned data.
   struct Main
@@ -58,7 +58,7 @@ class OpenWeatherMap::Weather
     getter sea_level : Int32?
   end
 
-  struct Conditions
+  struct Weather
     include JSON::Serializable
 
     getter id : Int32
@@ -136,7 +136,7 @@ class OpenWeatherMap::Weather
 
   {% for name in %w[id main description icon] %}
     def weather_{{name.id}}
-      @conditions[0].{{name.id}}
+      @weather[0].{{name.id}}
     end
   {% end %}
 

@@ -5,7 +5,7 @@ require "./coord"
 class OpenWeatherMap::FiveDayForecast
   include JSON::Serializable
 
-  getter list : Array(Weather)
+  getter list : Array(Conditions)
   @city : City
 
   struct City

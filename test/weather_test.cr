@@ -5,32 +5,32 @@ require "json"
 require "/../src/owm/weather"
 
 class CurrentWeatherTest < Minitest::Test
-  def port_credit
+  def port_credit : OpenWeatherMap::Conditions
     # Includes snow
-    @port_credit ||= OpenWeatherMap::Weather.from_json(%({"dt":1515013200,"main":{"temp":260.359,"temp_min":260.359,"temp_max":260.359,"pressure":991.62,"sea_level":1026.9,"grnd_level":991.62,"humidity":62,"temp_kf":0},"weather":[{"id":600,"main":"Snow","description":"light snow","icon":"13d"}],"clouds":{"all":88},"wind":{"speed":4.4,"deg":242.01},"snow":{"3h":0.405},"sys":{"pod":"d"},"dt_txt":"2018-01-03 21:00:00"}))
+    @port_credit ||= OpenWeatherMap::Conditions.from_json(%({"dt":1515013200,"main":{"temp":260.359,"temp_min":260.359,"temp_max":260.359,"pressure":991.62,"sea_level":1026.9,"grnd_level":991.62,"humidity":62,"temp_kf":0},"weather":[{"id":600,"main":"Snow","description":"light snow","icon":"13d"}],"clouds":{"all":88},"wind":{"speed":4.4,"deg":242.01},"snow":{"3h":0.405},"sys":{"pod":"d"},"dt_txt":"2018-01-03 21:00:00"}))
   end
 
-  def port_credit_no_snow
+  def port_credit_no_snow : OpenWeatherMap::Conditions
     # Includes a snow key with an empty subobject
-    @port_credit ||= OpenWeatherMap::Weather.from_json(%({"dt":1515272400,"main":{"temp":258.931,"temp_min":258.931,"temp_max":258.931,"pressure":1007.08,"sea_level":1043.8,"grnd_level":1007.08,"humidity":48,"temp_kf":0},"weather":[{"id":800,"main":"Clear","description":"clear sky","icon":"01d"}],"clouds":{"all":0},"wind":{"speed":4.11,"deg":305.007},"snow":{},"sys":{"pod":"d"},"dt_txt":"2018-01-06 21:00:00"}))
+    @port_credit ||= OpenWeatherMap::Conditions.from_json(%({"dt":1515272400,"main":{"temp":258.931,"temp_min":258.931,"temp_max":258.931,"pressure":1007.08,"sea_level":1043.8,"grnd_level":1007.08,"humidity":48,"temp_kf":0},"weather":[{"id":800,"main":"Clear","description":"clear sky","icon":"01d"}],"clouds":{"all":0},"wind":{"speed":4.11,"deg":305.007},"snow":{},"sys":{"pod":"d"},"dt_txt":"2018-01-06 21:00:00"}))
   end
 
-  def london
+  def london : OpenWeatherMap::Conditions
     # Includes rain
-    @london ||= OpenWeatherMap::Weather.from_json(%({"dt":1514948400,"main":{"temp":281.062,"temp_min":281.062,"temp_max":281.062,"pressure":998.01,"sea_level":1005.51,"grnd_level":998.01,"humidity":95,"temp_kf":0},"weather":[{"id":501,"main":"Rain","description":"moderate rain","icon":"10n"}],"clouds":{"all":68},"wind":{"speed":10.32,"deg":263},"rain":{"3h":3.325},"sys":{"pod":"n"},"dt_txt":"2018-01-03 03:00:00"}))
+    @london ||= OpenWeatherMap::Conditions.from_json(%({"dt":1514948400,"main":{"temp":281.062,"temp_min":281.062,"temp_max":281.062,"pressure":998.01,"sea_level":1005.51,"grnd_level":998.01,"humidity":95,"temp_kf":0},"weather":[{"id":501,"main":"Rain","description":"moderate rain","icon":"10n"}],"clouds":{"all":68},"wind":{"speed":10.32,"deg":263},"rain":{"3h":3.325},"sys":{"pod":"n"},"dt_txt":"2018-01-03 03:00:00"}))
   end
 
-  def london_no_rain
+  def london_no_rain : OpenWeatherMap::Conditions
     # Has a rain entry, but it's empty
-    @london_no_rain ||= OpenWeatherMap::Weather.from_json(%({"dt":1514883600,"main":{"temp":276.7,"temp_min":276.7,"temp_max":277.372,"pressure":1017.68,"sea_level":1025.56,"grnd_level":1017.68,"humidity":77,"temp_kf":-0.67},"weather":[{"id":803,"main":"Clouds","description":"broken clouds","icon":"04d"}],"clouds":{"all":64},"wind":{"speed":3.53,"deg":228.5},"rain":{},"sys":{"pod":"d"},"dt_txt":"2018-01-02 09:00:00"}))
+    @london_no_rain ||= OpenWeatherMap::Conditions.from_json(%({"dt":1514883600,"main":{"temp":276.7,"temp_min":276.7,"temp_max":277.372,"pressure":1017.68,"sea_level":1025.56,"grnd_level":1017.68,"humidity":77,"temp_kf":-0.67},"weather":[{"id":803,"main":"Clouds","description":"broken clouds","icon":"04d"}],"clouds":{"all":64},"wind":{"speed":3.53,"deg":228.5},"rain":{},"sys":{"pod":"d"},"dt_txt":"2018-01-02 09:00:00"}))
   end
 
-  def legnica
-    @legnica ||= OpenWeatherMap::Weather.from_json(%({"coord":{"lon":16.17,"lat":51.21},"weather":[{"id":803,"main":"Clouds","description":"broken clouds","icon":"04n"}],"base":"stations","main":{"temp":276.15,"pressure":996,"humidity":69,"temp_min":276.15,"temp_max":276.15},"visibility":10000,"wind":{"speed":14.9,"deg":280,"gust":21.1},"clouds":{"all":75},"dt":1516320000,"sys":{"type":1,"id":5375,"message":0.0042,"country":"PL","sunrise":1516344564,"sunset":1516375387},"id":3093692,"name":"Legnica","cod":200}))
+  def legnica : OpenWeatherMap::Conditions
+    @legnica ||= OpenWeatherMap::Conditions.from_json(%({"coord":{"lon":16.17,"lat":51.21},"weather":[{"id":803,"main":"Clouds","description":"broken clouds","icon":"04n"}],"base":"stations","main":{"temp":276.15,"pressure":996,"humidity":69,"temp_min":276.15,"temp_max":276.15},"visibility":10000,"wind":{"speed":14.9,"deg":280,"gust":21.1},"clouds":{"all":75},"dt":1516320000,"sys":{"type":1,"id":5375,"message":0.0042,"country":"PL","sunrise":1516344564,"sunset":1516375387},"id":3093692,"name":"Legnica","cod":200}))
   end
 
-  def weather
-    @weather ||= OpenWeatherMap::Weather.from_json(%({"dt":1406106000,"main":{"temp":298.77,"temp_min":298.77,"temp_max":298.774, "pressure":1005.93,"humidity":87,"temp_kf":0.26},"weather":[{"id":804,"main":"Clouds","description":"overcast clouds","icon":"04d"}],"clouds":{"all":88},"wind":{"speed":5.71,"deg":229.501},"sys":{"pod":"d"},"dt_txt":"2014-07-23 09:00:00"}))
+  def weather : OpenWeatherMap::Conditions
+    @weather ||= OpenWeatherMap::Conditions.from_json(%({"dt":1406106000,"main":{"temp":298.77,"temp_min":298.77,"temp_max":298.774, "pressure":1005.93,"humidity":87,"temp_kf":0.26},"weather":[{"id":804,"main":"Clouds","description":"overcast clouds","icon":"04d"}],"clouds":{"all":88},"wind":{"speed":5.71,"deg":229.501},"sys":{"pod":"d"},"dt_txt":"2014-07-23 09:00:00"}))
   end
 
   def test_parses_json

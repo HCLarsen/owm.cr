@@ -2,7 +2,7 @@ require "./weather"
 require "./coord"
 
 # Contains all the information on the current weather status for any city.
-class OpenWeatherMap::CurrentWeather < OpenWeatherMap::Weather
+class OpenWeatherMap::CurrentWeather < OpenWeatherMap::Conditions
   include JSON::Serializable
 
   getter name : String

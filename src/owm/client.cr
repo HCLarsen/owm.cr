@@ -18,7 +18,7 @@ class OpenWeatherMap::Client
   # id : Querying by the city ID.
   # lat & lon : Querying by latitudinal and longitudinal values.
   # zip : For American addresses, querying by the zip code.
-  def current_weather_for_city(params : Hash(String, _) )
+  def current_weather_for_city(params : Hash(String, _) ) : CurrentWeather
     data = get_data(@@base_address + "weather?", params)
     CurrentWeather.from_json(data.body)
   end
@@ -30,7 +30,7 @@ class OpenWeatherMap::Client
   # coordinates provided.
   # bbox : Query for all cities within a rectangle of coordinates provided.
   # id : Query by a list of city IDs.
-  def current_weather_for_cities(params : Hash(String, _) )
+  def current_weather_for_cities(params : Hash(String, _) ) : Array(CurrentWeather)
     case
     when params.keys.includes?("bbox")
       address = @@base_address + "bbox?"
@@ -57,7 +57,7 @@ class OpenWeatherMap::Client
   # id : Querying by the city ID.
   # lat & lon : Querying by latitudinal and longitudinal values.
   # zip : For American addresses, querying by the zip code.
-  def five_day_forecast_for_city(params : Hash(String, _) )
+  def five_day_forecast_for_city(params : Hash(String, _) ) : FiveDayForecast
     data = get_data(@@base_address + "forecast?", params)
     FiveDayForecast.from_json(data.body)
   end
@@ -69,7 +69,7 @@ class OpenWeatherMap::Client
   # id : Querying by the city ID.
   # lat & lon : Querying by latitudinal and longitudinal values.
   # zip : For American addresses, querying by the zip code.
-  def sunrise_sunset_for_city(params : Hash(String, _) )
+  def sunrise_sunset_for_city(params : Hash(String, _) ) : Array(Time)
     data = get_data(@@base_address + "weather?", params)
     value = JSON.parse(data.body)
     [Time.new(seconds: value["sys"]["sunrise"].as_i64, nanoseconds: 0, location: Time::Location.local), Time.new(seconds: value["sys"]["sunset"].as_i64, nanoseconds: 0, location: Time::Location.local)]
