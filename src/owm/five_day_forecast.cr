@@ -2,7 +2,7 @@ require "./weather"
 require "./coord"
 
 # Provides a 5 day weather forecast, with 3 hour intervals.
-class OpenWeatherMap::FiveDayForecast
+class OWM::FiveDayForecast
   include JSON::Serializable
 
   getter list : Array(Conditions)
@@ -14,7 +14,7 @@ class OpenWeatherMap::FiveDayForecast
     getter name : String
     getter id : Int32
     getter country : String
-    getter coord : OpenWeatherMap::Coord
+    getter coord : OWM::Coord
   end
 
   # Macros that create top level getter methods for nested properties.

@@ -28,7 +28,7 @@ class NumToFloat
 end
 
 # Contains all the information on the current weather status for any city.
-class OpenWeatherMap::Conditions
+class OWM::Conditions
   include JSON::Serializable
 
   @[JSON::Field(key: "dt", converter: Time::EpochConverter)]
@@ -39,8 +39,8 @@ class OpenWeatherMap::Conditions
   getter weather : Array(Weather)
   @[JSON::Field(root: "all")]
   getter clouds : Int32 = 0
-  @rain : Rain = OpenWeatherMap::Conditions::Rain.new
-  @snow : Snow = OpenWeatherMap::Conditions::Snow.new
+  @rain : Rain = OWM::Conditions::Rain.new
+  @snow : Snow = OWM::Conditions::Snow.new
 
   # Structs for mapping the json subobjects within returned data.
   struct Main
@@ -80,7 +80,7 @@ class OpenWeatherMap::Conditions
     getter gust : Int32 = 0
   end
 
-  # The OpenWeatherMap API returns rain and snow data in one of three ways. Either no top level key at all, a Rain/Snow key with an empty subobject, or a subobject with a key of "3h." The following structs and corresponding getters process all three versions properly.
+  # The OWM API returns rain and snow data in one of three ways. Either no top level key at all, a Rain/Snow key with an empty subobject, or a subobject with a key of "3h." The following structs and corresponding getters process all three versions properly.
 
   struct Rain
     include JSON::Serializable

@@ -1,4 +1,4 @@
 require "./owm/*"
 
-module OpenWeatherMap
+module OWM
 end

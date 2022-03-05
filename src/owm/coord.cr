@@ -1,4 +1,4 @@
-struct OpenWeatherMap::Coord
+struct OWM::Coord
   include JSON::Serializable
 
   getter lon : Float64

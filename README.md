@@ -17,14 +17,14 @@ dependencies:
 ```crystal
 require "owm"
 
-client = OpenWeatherMap::Client.new(USERS_OWM_KEY)
+client = OWM::Client.new(USERS_OWM_KEY)
 params = { "q" => "Toronto" }
 currentWeather = client.current_weather_for_city(params)
 
 puts "The current weather in Toronto is #{currentWeather.temp}"
 ```
 
-Note: Users must obtain their own API key from http://openweathermap.org/appid, and substitute their key as USERS_OWM_KEY.
+Note: Users must obtain their own API key from http://OWM.org/appid, and substitute their key as USERS_OWM_KEY.
 
 ## Development
 
