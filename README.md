@@ -9,7 +9,7 @@ Add this to your application's `shard.yml`:
 ```yaml
 dependencies:
   owm:
-    github: HCLarsen/owm
+    github: HCLarsen/owm.cr
 ```
 
 ## Usage
