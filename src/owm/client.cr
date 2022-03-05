@@ -6,7 +6,7 @@ require "./five_day_forecast"
 
 # A client for interfacing with the Open Weather Map API.
 class OWM::Client
-  @@base_address = "http://api.OWM.org/data/2.5/"
+  @@base_address = "http://api.openweathermap.org/data/2.5/"
   def initialize(key : String)
     @key = key
   end
