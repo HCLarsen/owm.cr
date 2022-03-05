@@ -2,7 +2,7 @@ require "minitest/autorun"
 
 require "json"
 
-require "/../src/open_weather_map/weather"
+require "/../src/owm/weather"
 
 class CurrentWeatherTest < Minitest::Test
   def port_credit

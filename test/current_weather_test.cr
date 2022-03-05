@@ -2,7 +2,7 @@ require "minitest/autorun"
 
 require "json"
 
-require "/../src/open_weather_map/current_weather"
+require "/../src/owm/current_weather"
 
 class CurrentWeatherTest < Minitest::Test
   def cairns

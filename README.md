@@ -8,14 +8,14 @@ Add this to your application's `shard.yml`:
 
 ```yaml
 dependencies:
-  open_weather_map:
-    github: HCLarsen/open_weather_map
+  owm:
+    github: HCLarsen/owm
 ```
 
 ## Usage
 
 ```crystal
-require "open_weather_map"
+require "owm"
 
 client = OpenWeatherMap::Client.new(USERS_OWM_KEY)
 params = { "q" => "Toronto" }
@@ -32,7 +32,7 @@ Tests for the Client class are designed to use a key stored as an environment va
 
 ## Contributing
 
-1. Fork it ( https://github.com/HCLarsen/open_weather_map/fork )
+1. Fork it ( https://github.com/HCLarsen/owm/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)

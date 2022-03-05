@@ -2,7 +2,7 @@ require "minitest/autorun"
 
 require "json"
 
-require "/../src/open_weather_map/five_day_forecast"
+require "/../src/owm/five_day_forecast"
 
 class FiveDayForecastTest < Minitest::Test
   def mississauga

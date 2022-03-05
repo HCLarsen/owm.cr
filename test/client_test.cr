@@ -2,7 +2,7 @@ require "minitest/autorun"
 
 require "json"
 
-require "/../src/open_weather_map/client"
+require "/../src/owm/client"
 require "./webmocks.cr"
 
 class ClientTest < Minitest::Test
