@@ -1,31 +1,6 @@
 require "json"
 
-# Custom converters for values that may appear as an Int or as a Float
-class NumToInt
-  def self.from_json(pull : JSON::PullParser)
-    case pull.kind
-    when JSON::PullParser::Kind::Float
-      pull.read_float.round.to_i
-    when JSON::PullParser::Kind::Int
-      pull.read_int.to_i
-    else
-      raise "Expected float or int but was #{pull.kind}"
-    end
-  end
-end
-
-class NumToFloat
-  def self.from_json(pull : JSON::PullParser)
-    case pull.kind
-    when JSON::PullParser::Kind::Int
-      pull.read_int.to_f
-    when JSON::PullParser::Kind::Float
-      pull.read_float
-    else
-      raise "Expected float or int but was #{pull.kind}"
-    end
-  end
-end
+require "./converters"
 
 # Contains all the information on the current weather status for any city.
 class OWM::Conditions
@@ -47,14 +22,14 @@ class OWM::Conditions
     include JSON::Serializable
 
     getter temp : Float64
-    @[JSON::Field(converter: NumToInt)]
+    @[JSON::Field(converter: Int32::NumberConverter)]
     getter pressure : Int32
     getter humidity : Int32
     getter temp_min : Float64
     getter temp_max : Float64
-    @[JSON::Field(converter: NumToInt)]
+    @[JSON::Field(converter: Int32::NumberConverter)]
     getter grnd_level : Int32?
-    @[JSON::Field(converter: NumToInt)]
+    @[JSON::Field(converter: Int32::NumberConverter)]
     getter sea_level : Int32?
   end
 
@@ -70,13 +45,13 @@ class OWM::Conditions
   struct Wind
     include JSON::Serializable
 
-    @[JSON::Field(converter: NumToInt)]
+    @[JSON::Field(converter: Int32::NumberConverter)]
     getter speed : Int32
 
-    @[JSON::Field(converter: NumToInt)]
+    @[JSON::Field(converter: Int32::NumberConverter)]
     getter deg : Int32
 
-    @[JSON::Field(converter: NumToInt)]
+    @[JSON::Field(converter: Int32::NumberConverter)]
     getter gust : Int32 = 0
   end
 
