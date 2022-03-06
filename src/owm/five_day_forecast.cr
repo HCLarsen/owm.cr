@@ -1,4 +1,4 @@
-require "./weather"
+require "./conditions"
 require "./coord"
 
 # Provides a 5 day weather forecast, with 3 hour intervals.

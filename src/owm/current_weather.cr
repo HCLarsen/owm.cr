@@ -1,4 +1,4 @@
-require "./weather"
+require "./conditions"
 require "./coord"
 
 # Contains all the information on the current weather status for any city.

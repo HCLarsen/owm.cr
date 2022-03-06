@@ -2,9 +2,9 @@ require "minitest/autorun"
 
 require "json"
 
-require "/../src/owm/weather"
+require "/../src/owm/conditions"
 
-class WeatherTest < Minitest::Test
+class ConditionsTest < Minitest::Test
   def port_credit : OWM::Conditions
     # Includes snow
     @port_credit ||= OWM::Conditions.from_json(%({"dt":1515013200,"main":{"temp":260.359,"temp_min":260.359,"temp_max":260.359,"pressure":991.62,"sea_level":1026.9,"grnd_level":991.62,"humidity":62,"temp_kf":0},"weather":[{"id":600,"main":"Snow","description":"light snow","icon":"13d"}],"clouds":{"all":88},"wind":{"speed":4.4,"deg":242.01},"snow":{"3h":0.405},"sys":{"pod":"d"},"dt_txt":"2018-01-03 21:00:00"}))
