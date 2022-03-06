@@ -1,6 +1,7 @@
 require "json"
 
 require "./converters"
+require "./weather"
 
 # Contains all the information on the current weather status for any city.
 class OWM::Conditions
@@ -31,15 +32,6 @@ class OWM::Conditions
     getter grnd_level : Int32?
     @[JSON::Field(converter: Int32::NumberConverter)]
     getter sea_level : Int32?
-  end
-
-  struct Weather
-    include JSON::Serializable
-
-    getter id : Int32
-    getter main : String
-    getter description : String
-    getter icon : String
   end
 
   struct Wind
