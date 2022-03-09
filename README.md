@@ -1,7 +1,5 @@
 # Crystal Open Weather Map Interface
 
-UNDER HEAVY DEVELOPMENT: BREAKING CHANGES TO COME
-
 A Crystal interface for the Open Weather Map API. Currently, this library supports all the options available to Free Accounts, with the exception of Weather Map Layers.
 
 ## Installation
