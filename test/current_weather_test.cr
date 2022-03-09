@@ -29,23 +29,23 @@ class CurrentWeatherTest < Minitest::Test
   end
 
   def test_coords
-    assert_equal 43.59, mississauga.lat
-    assert_equal -79.65, mississauga.lon
+    assert_equal 43.59, mississauga.coord.lat
+    assert_equal -79.65, mississauga.coord.lon
   end
 
   def test_weather_info
-    assert_equal 500, mississauga.weather_id
-    assert_equal "Rain", mississauga.weather_main
-    assert_equal "light rain", mississauga.weather_description
-    assert_equal "10n", mississauga.weather_icon
+    assert_equal 500, mississauga.weather[0].id
+    assert_equal "Rain", mississauga.weather[0].main
+    assert_equal "light rain", mississauga.weather[0].description
+    assert_equal "10n", mississauga.weather[0].icon
   end
 
   def test_main_info
-    assert_equal 274.14, mississauga.temp
-    assert_equal 273.15, mississauga.temp_min
-    assert_equal 275.15, mississauga.temp_max
-    assert_equal 1013, mississauga.pressure
-    assert_equal 64, mississauga.humidity
+    assert_equal 274.14, mississauga.main.temp
+    assert_equal 273.15, mississauga.main.temp_min
+    assert_equal 275.15, mississauga.main.temp_max
+    assert_equal 1013, mississauga.main.pressure
+    assert_equal 64, mississauga.main.humidity
   end
 
   def test_multiple_conditions
@@ -56,32 +56,35 @@ class CurrentWeatherTest < Minitest::Test
   end
 
   def test_wind_info
-    assert_equal 6, mississauga.wind_speed
-    assert_equal 270, mississauga.wind_deg
+    assert_equal 6, mississauga.wind.speed
+    assert_equal 270, mississauga.wind.deg
   end
 
   def test_rain
-    assert_equal 3.0, cairns.rain
+    assert_equal 3.0, cairns.rain.amount
+    assert_equal "3h", cairns.rain.duration
   end
 
-  def test_rain_and_snow_default_to_0
-    assert_equal 0.0, mississauga.snow
-    assert_equal 0.0, mississauga.rain
+  def test_rain_and_snow_default
+    assert_equal 0.0, mississauga.snow.amount
+    assert_equal "1h", mississauga.snow.duration
+    assert_equal 0.0, mississauga.rain.amount
+    assert_equal "1h", mississauga.rain.duration
   end
 
   def test_float_pressure_processed_as_int
-    assert_equal 986, tromso.pressure
-    assert_equal 1027, tromso.sea_level
-    assert_equal 986, tromso.grnd_level
+    assert_equal 986, tromso.main.pressure
+    assert_equal 1027, tromso.main.sea_level
+    assert_equal 986, tromso.main.grnd_level
   end
 
   def test_grnd_level_and_sea_level
-    assert_equal 986, tromso.grnd_level
-    assert_equal 1027, tromso.sea_level
+    assert_equal 986, tromso.main.grnd_level
+    assert_equal 1027, tromso.main.sea_level
   end
 
   def test_absent_grnd_level_and_sea_level
-    assert_equal mississauga.pressure, mississauga.grnd_level
-    assert_equal mississauga.pressure, mississauga.sea_level
+    assert_equal mississauga.main.pressure, mississauga.main.grnd_level
+    assert_equal mississauga.main.pressure, mississauga.main.sea_level
   end
 end

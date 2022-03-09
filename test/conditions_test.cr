@@ -35,56 +35,57 @@ class ConditionsTest < Minitest::Test
 
   def test_parses_json
     assert_equal Time.unix(1406106000), weather.time
-    assert_equal 298.77, weather.temp
-    assert_equal 298.77, weather.temp_min
-    assert_equal 298.774, weather.temp_max
-    assert_equal 804, weather.weather_id
-    assert_equal "Clouds", weather.weather_main
-    assert_equal "overcast clouds", weather.weather_description
-    assert_equal "04d", weather.weather_icon
-    assert_equal 6, weather.wind_speed
-    assert_equal 1006, weather.pressure
-    assert_equal 87, weather.humidity
+    assert_equal 298.77, weather.main.temp
+    assert_equal 298.77, weather.main.temp_min
+    assert_equal 298.774, weather.main.temp_max
+    assert_equal 1006, weather.main.pressure
+    assert_equal 87, weather.main.humidity
+    assert_equal 804, weather.weather[0].id
+    assert_equal "Clouds", weather.weather[0].main
+    assert_equal "overcast clouds", weather.weather[0].description
+    assert_equal "04d", weather.weather[0].icon
+    assert_equal 6, weather.wind.speed
     assert_equal 88, weather.clouds
   end
 
   def test_rain
-    assert_equal 3.325, london.rain
+    assert_equal 3.325, london.rain.amount
   end
 
   def test_empty_rain_key
     # At times, the API will return rain data as thus: rain:{}. This should still return 0.0.
-    assert_equal 0.0, london_no_rain.rain
+    assert_equal 0.0, london_no_rain.rain.amount
   end
 
   def test_snow
-    assert_equal 0.405, port_credit.snow
+    assert_equal 0.405, port_credit.snow.amount
   end
 
   def test_empty_snow_key
     # At times, the API will return snow data as thus: snow:{}. This should still return 0.0.
-    assert_equal 0.0, port_credit_no_snow.snow
+    assert_equal 0.0, port_credit_no_snow.snow.amount
+    assert_equal "1h", port_credit_no_snow.snow.duration
   end
 
   def test_rain_and_snow_default_to_0
-    assert_equal 0.0, weather.rain
-    assert_equal 0.0, weather.snow
+    assert_equal 0.0, weather.rain.amount
+    assert_equal 0.0, weather.snow.amount
   end
 
   def test_absent_grnd_level_and_sea_level
-    assert_equal weather.pressure, weather.sea_level
-    assert_equal weather.pressure, weather.grnd_level
+    assert_equal weather.main.pressure, weather.main.sea_level
+    assert_equal weather.main.pressure, weather.main.grnd_level
   end
 
   def test_wind_with_gust
-    assert_equal 15, legnica.wind_speed
-    assert_equal 280, legnica.wind_deg
-    assert_equal 21, legnica.wind_gust
+    assert_equal 15, legnica.wind.speed
+    assert_equal 280, legnica.wind.deg
+    assert_equal 21, legnica.wind.gust
   end
 
   def test_wind_gust_default_0
-    assert_equal 6, weather.wind_speed
-    assert_equal 230, weather.wind_deg
-    assert_equal 0, weather.wind_gust
+    assert_equal 6, weather.wind.speed
+    assert_equal 230, weather.wind.deg
+    assert_equal 0, weather.wind.gust
   end
 end

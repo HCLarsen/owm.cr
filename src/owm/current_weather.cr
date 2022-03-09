@@ -1,5 +1,4 @@
 require "./conditions"
-require "./coord"
 
 # Contains all the information on the current weather status for any city.
 class OWM::CurrentWeather < OWM::Conditions
@@ -9,7 +8,7 @@ class OWM::CurrentWeather < OWM::Conditions
   getter id : Int32
   @[JSON::Field(key: "sys", root: "country")]
   getter country : String
-  @coord : OWM::Coord
+  getter coord : OWM::Coord
 
   # Returns the time passed since the instantiation of the object. Useful for
   # checking how recent the weather data is.

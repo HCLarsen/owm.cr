@@ -25,10 +25,11 @@ class FiveDayForecastTest < Minitest::Test
   def test_weather
     forecast = mississauga.list.first
     assert_equal Time.unix(1516071600), forecast.time
-    assert_equal 266.06, forecast.temp
-    assert_equal "Snow", forecast.weather_main
+    assert_equal 266.06, forecast.main.temp
+    assert_equal "Snow", forecast.weather[0].main
     assert_equal 76, forecast.clouds
-    assert_equal 0.559, forecast.snow
-    assert_equal 2, forecast.wind_speed
+    assert_equal 0.559, forecast.snow.amount
+    assert_equal "3h", forecast.snow.duration
+    assert_equal 2, forecast.wind.speed
   end
 end

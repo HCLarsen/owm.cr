@@ -1,7 +1,6 @@
 require "json"
 
 require "./converters"
-require "./weather"
 require "./misc"
 
 class OWM::OneCall
