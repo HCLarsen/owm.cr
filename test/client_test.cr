@@ -22,6 +22,12 @@ class ClientTest < Minitest::Test
     assert_equal Array(OWM::CurrentWeather), currentWeather.class
   end
 
+  def test_fetches_one_call
+    params = { "lat" => 43.5789, "lon" => -79.6583 }
+    one_call = client.one_call(params)
+    assert_equal OWM::OneCall, one_call.class
+  end
+
   def test_fetches_five_day_forecast_from_name
     params = { "q" => "Mississauga" }
     forecast = client.five_day_forecast_for_city(params)

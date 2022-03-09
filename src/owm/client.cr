@@ -2,11 +2,12 @@ require "http/client"
 require "json"
 
 require "./current_weather"
+require "./one_call"
 require "./five_day_forecast"
 
 # A client for interfacing with the Open Weather Map API.
 class OWM::Client
-  @@base_address = "http://api.openweathermap.org/data/2.5/"
+  @@base_address = "https://api.openweathermap.org/data/2.5/"
   def initialize(key : String)
     @key = key
   end
@@ -50,6 +51,13 @@ class OWM::Client
     end
   end
 
+  # Requests data from OpenWeatherMap's (OneCall API)[https://openweathermap.org/api/one-call-api]
+  # with latitude and longitude for location.
+  def one_call(params : Hash(String, _)) : OneCall
+    data = get_data(@@base_address + "onecall?", params)
+    OneCall.from_json(data.body)
+  end
+
   # Requests 5 day/3 hour weather forecast for a single city by passing in required
   # parameters as a hash.
   # The Hash must have one of the following sets of keys:
@@ -77,7 +85,7 @@ class OWM::Client
 
   private def get_data(address : String, input_params : Hash(String, _) )
     raise "Invalid Parameters" if input_params.empty?
-    params = { "APPID" => @key }
+    params = { "appid" => @key }
     input_params.each do |k,v|
       case v
       when Array
