@@ -129,5 +129,5 @@ class OWM::OneCall
   getter minutely : Array(Minutely)
   getter hourly : Array(Hourly)
   getter daily : Array(Daily)
-  getter alerts : Array(Alert)
+  getter alerts : Array(Alert) = [] of Alert
 end

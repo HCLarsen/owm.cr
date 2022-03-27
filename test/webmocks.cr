@@ -13,3 +13,5 @@ WebMock.stub(:get, "https://api.openweathermap.org/data/2.5/group?appid=NOTAREAL
 WebMock.stub(:get, "https://api.openweathermap.org/data/2.5/weather?appid=NOTAREALKEY&lat=43.5&lon=-79.5").to_return(status: 200, body: File.read("test/files/coords.json"))
 
 WebMock.stub(:get, "https://api.openweathermap.org/data/2.5/onecall?appid=NOTAREALKEY&lat=43.5789&lon=-79.6583").to_return(status: 200, body: File.read("test/files/onecall.json"))
+
+WebMock.stub(:get, "https://api.openweathermap.org/data/2.5/onecall?appid=NOTAREALKEY&lat=43.5789&lon=-79.6583").to_return(status: 200, body: File.read("test/files/weekdayweather.json"))

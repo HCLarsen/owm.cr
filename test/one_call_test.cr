@@ -136,4 +136,10 @@ class OneCallTest < Minitest::Test
     assert_equal 266, one_call.daily[0].dew_point
     assert_equal "Environment Canada", one_call.alerts[0].sender_name
   end
+
+  def test_parses_one_call_without_alert
+    json = File.read("test/files/weekdayweather.json")
+    one_call = OWM::OneCall.from_json(json)
+
+  end
 end
