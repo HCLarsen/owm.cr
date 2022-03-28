@@ -10,10 +10,33 @@ class ClientTest < Minitest::Test
     @client ||= OWM::Client.new("NOTAREALKEY")
   end
 
+  def test_initalizes_with_units
+    metric_client = OWM::Client.new("NOTAREALKEY", "metric")
+    params = { "lat" => 43.5789, "lon" => -79.6583 }
+    metric_weather = metric_client.current_weather_for_city(params)
+
+    assert_equal -7.73, metric_weather.main.temp
+  end
+
   def test_fetches_current_weather_from_coordinates
     params = { "lat" => 43.5, "lon" => -79.5 }
     currentWeather = client.current_weather_for_city(params)
     assert_equal OWM::CurrentWeather, currentWeather.class
+  end
+
+  def test_fetches_current_weather_from_coordinates_and_units
+    params = { "lat" => 43.5789, "lon" => -79.6583, "units" => "metric" }
+    current = client.current_weather_for_city(params)
+
+    assert_equal -7.73, current.main.temp
+  end
+
+  def test_overrides_default_units
+    metric_client = OWM::Client.new("NOTAREALKEY", "metric")
+    params = { "lat" => 43.5789, "lon" => -79.6583, "units" => "standard" }
+    current = metric_client.current_weather_for_city(params)
+
+    assert_equal 265.4, current.main.temp
   end
 
   def test_fetches_current_weather_for_many_cities

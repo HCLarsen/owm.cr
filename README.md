@@ -28,7 +28,10 @@ Note: Users must obtain their own API key from http://OWM.org/appid, and substit
 
 ## Development
 
-Tests for the Client class are designed to use a key stored as an environment variable with the name OWM_TEST. Any tests using the Client class will not run without this environment variable.
+### To Do
+
+1. Add Air Pollution API wrapper.
+2. Add geocoding API wrapper.
 
 ## Contributing
 

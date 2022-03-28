@@ -8,8 +8,17 @@ require "./five_day_forecast"
 # A client for interfacing with the Open Weather Map API.
 class OWM::Client
   @@base_address = "https://api.openweathermap.org/data/2.5/"
-  def initialize(key : String)
+
+  @units : String
+
+  def initialize(key : String, units = "standard")
     @key = key
+
+    if units == "metric" || units == "imperial"
+      @units = units
+    else
+      @units = "standard"
+    end
   end
 
   # Requests current weather information for a single city by passing in required
@@ -86,6 +95,10 @@ class OWM::Client
   private def get_data(address : String, input_params : Hash(String, _) )
     raise "Invalid Parameters" if input_params.empty?
     params = { "appid" => @key }
+    if @units != "standard"
+      params["units"] = @units
+    end
+
     input_params.each do |k,v|
       case v
       when Array
