@@ -7,8 +7,10 @@ struct Int32::NumberConverter
       pull.read_float.round.to_i
     when JSON::PullParser::Kind::Int
       pull.read_int.to_i
+    when JSON::PullParser::Kind::String
+      pull.read_string.to_i
     else
-      raise "Expected float or int but was #{pull.kind}"
+      raise "Expected float, int, or string but was #{pull.kind}"
     end
   end
 end
